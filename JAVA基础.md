@@ -1081,3 +1081,184 @@ jpl.setBorder(...)	//为内容面板设置边框
 | 焦点事件监听器     | java.awt.event.FocusListener            | focusGained<br />focusLost                                   | FocusEvent         |
 | 窗口事件监听器     | java.awt.event.Window.Listener          | windowClosing<br />windowOpened<br />windowIconified<br />windowDeiconified<br />windowClosed<br />windowActivated<br />windowDeactivated | windowEvent        |
 
+
+
+## 数据库连接：
+
+执行SQL命令： 
+
+先创建一个Statement对象 调用DriverManager.getConnection()方法来获得Connection对象
+
+在把要执行的SQL语句插入到字符串中 然后调用executeUpdate()方法
+
+```java
+stmt.executeUpdate(command);
+```
+
+此方法返回受SQL命令影响的行数（查询操作必须用executeQuery()方法）
+
+executeQuery()方法返回一个ReeultSet对象 可以通过此来每一行地遍历所有的查询结果
+
+```java
+ResultSet rs = stmt.excuteQuery("SELECT * FROM Emplyee");
+```
+
+ 对遍历出的每一列内容可以通过访问器方法来进行获取 每个访问器都由两种形式 一种接收数字参数 一种接收字符串参数 当使用数字参数时 指定为该数字对应的列 寄当前行第几列数值 使用字符串参数时 返回字符串对应的列的值
+
+| sql数据类型                        | java数据类型         |
+| ---------------------------------- | -------------------- |
+| INTEGER/INT                        | int                  |
+| SMALLINT                           | short                |
+| NUMERIC(m,n)/DECIMAL(m,n)/DEC(m,n) | java.math.BigDecimal |
+| FLOAT(n)                           | double               |
+| REAL                               | float                |
+| DOUBLE                             | double               |
+| CHARACTER(n)/CHAR(n)               | String               |
+| VARVHAR(n)                         | String               |
+| BOOLEAN                            | boolean              |
+| DATE                               | java.sql.Date        |
+| TIME                               | java.sql.Time        |
+| TIMESTAMP                          | java.sql.Timestamp   |
+| BLOB(二进制大对象)                 | java.sql.Blob        |
+| CLOB（字符串大对象）               | java.sql.Clob        |
+| ARRAY（数组对象 ARRAY OF INT...）  | java.sql.Array       |
+
+
+
+SQL语句
+
+查询
+
+```sql
+SELECT LIST FROM TABLEN
+SELECT LIST FROM TABLEN WHERE DO
+```
+
+插入
+
+```SQL
+INSERT INTO TABLEN(LIST1,LIST2...) VALUES(VAL1,VAL2...)
+```
+
+修改
+
+```SQL
+UPDATE TABLEN SET LIST = ... WHERE DO
+```
+
+删除记录
+
+```sql
+DELETE FROM TABLEN WHERE DO
+```
+
+创建一个新表
+
+```SQL
+CREATE TABLE NEWTABLEN(LIST1 TYPE,LIST2 TYPE...)
+```
+
+删除一个表
+
+```sql
+DROP TABLE TABLEN
+```
+
+java SQL API
+
+1. java.sql.DriverManager   				驱动管理器
+
+   ```java
+   static Connection getConnectin(String url,String user,String password)		//建立一个数据库连接并返回一个Connection对象
+   ```
+
+2. java.sql.Connection                            表示连接对象
+
+   ```java
+   Statement createStatement()	//创建一个Statement对象 用以执行不带参的SQL查询与更新
+   ```
+
+   ```java
+   void close()		//立即关闭当前连接释放资源
+   ```
+
+3. java.sql.Statement                             表示sql语句对象 
+
+   ```java
+   ResultSet executQuery(String query)	//执行给定的字符串中SQL语句并返回一个用于查看查询结果的ResultSet对象
+   ```
+
+   ```java
+   int executeUpdate(String sqlStatement)	//执行字符串中指定的插入删除等操作 并返回影响行数 如果没有更新计数的语句则返回-1
+   ```
+
+   ```java
+   boolean exrcute(String sqlStatement)	//执行字符串中指定的SQL语句 如果该语句返回一个结果集 则该方法返回true 反之 返回false 使用getResultSet/getUpdateCount方法可得到语句的执行结果
+   ```
+   
+   ```java
+   int getUpdateCount()	//返回受前一条语句影响的记录总数 如果前一条语句未更新数据库 则返回-1 对于每一条执行过的语句 该方法只能调用一次
+   ```
+   
+   ```java
+   ResultSet getReultSet()		//返回当前查询语句结果集 如果当前语句未产生结果集则返回null 每一条仅调用一次
+   ```
+   
+   ```java
+   void close()	//关闭Statement对象
+   ```
+   
+4. java.sql.SQLException                       //表示SQL异常对象 
+
+   ```java
+   String getSQLState()		//返回SQL状态 其为一个与错误有关的5位数错误编码
+   ```
+
+   ```java
+   int getErrorCode()		//返回与数据库供应商相关的异常编码
+   ```
+
+   ```java
+   SQLException getNextException()		//返回连接到该SQL EXception对象下一个异常 该异常可能包含更多信息
+   ```
+
+每个Connection对象都可以创建一个或以上的Statement对象 同一个Statement对象可以用于多个相关指令和查询 但是一个Statement对象 最多只能打开一个结果集 如果需要执行多个查询操作 且需要同时分析查询结果 则必须创建多个Statement对象
+
+当使用完 Connection、ResultSet、Statement对象时应立刻使用close()方法进行关闭 这些对象的数据结构较大 占用空间大
+
+
+
+滚动和更新结果集
+
+从查询中获取可滚动的结果集
+
+```java
+Statement stmt = conn.createStatement(type,concurrency);
+```
+
+```java
+PreparedStatement pstmt = conn.prepareStatement(command,type,concurrency)	//获取预编译语句
+```
+
+ResultSet type值
+
+| 值                      | 描述                               |
+| ----------------------- | ---------------------------------- |
+| TYPE_FROMARD_ONLY       | 结果集不可滚动                     |
+| TYPE_SCROLL_INSENSITIVE | 结果集可以滚动但对数据库变化不敏感 |
+| TYPE_SCROLL_SECSITVE    | 结果集可滚动且对数据库变化敏感     |
+
+ResultSet concurrency值
+
+| 值               | 描述                     |
+| ---------------- | ------------------------ |
+| CONCUR_READ_ONLY | 结果集不可用于更新数据库 |
+| CONCUR_UPDATEBLE | 结果集可用于更新数据库   |
+
+可滚动的结果集存在一个游标来指向当前行位置
+
+`result.previous()`如果游标位于实际行上则返回true 否则在第一行前返回false
+
+`result.absolute(n)`	//n为整数则游标向前移动n为负数则游标向后移动 0无效 如果试图移动到区域外 则方法返回false且不移动
+
+`result.getRow()`		//返回当前游标行号 如果不存在于任何一行 则返回0
