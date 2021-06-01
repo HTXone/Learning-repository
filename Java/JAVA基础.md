@@ -627,17 +627,19 @@ classname extends superclass implements interface{
 
 1. 顶端类：InputStream OutStream
 
+   装饰类：
+   
    | 字节流类              | 意义                                     |
    | --------------------- | ---------------------------------------- |
    | BufferedInputStream   | 输入流缓冲                               |
    | BufferedOutputStream  | 输出流缓冲                               |
    | ByteArrayInputStream  | 从子节数组中读取输入流                   |
-   | ByteArrayOutputStream | 写入字节数组的输出流                     |
+| ByteArrayOutputStream | 写入字节数组的输出流                     |
    | DataInputStream       | 包含用于读取Java标准数据类型方法的输入流 |
 
    InputStream定义方法
-
-   | 方法                                        | 表示                                                         |
+   
+   | 方法                                        | 表4示                                                        |
    | ------------------------------------------- | ------------------------------------------------------------ |
    | int available                               | 赶回当前可读取的输入字节数                                   |
    | void close()                                | 关闭输入流 而且任何读取尝试将生成一个IOException             |
@@ -646,18 +648,18 @@ classname extends superclass implements interface{
    | int read()                                  | 返回一个整数代表下一个输入的有效字节 返回-1时表示到达文件末尾 |
    | int read(byte buffer[])                     | 尝试读取buffer.length数量的字节到缓存 并返回实际成功读取的字节数 返回-1表示到达文件末尾 |
    | int read(byte buffer[],int offset,int numB) | 尝试读取numBytes 数量的字节到缓存中以buffer[offset]开始的位置 并返回实际成功读取的字节数 返回-1时表示到达文件末尾 |
-   | void reset()                                | 将输入指针重新改为原来设置的标记                             |
+| void reset()                                | 将输入指针重新改为原来设置的标记                             |
    | long skip(long numB)                        | 体哦啊个numBytes个数量的输入字节 返回实际被跳过的字节数      |
 
    Output Stream定义的方法
-
+   
    | 方法              | 表示                                           |
    | ----------------- | ---------------------------------------------- |
    | void close()      | 关闭输出流 而且任何写尝试将产生一个IOException |
    | void flush()      | 完成输入状态 时任何缓冲清空                    |
-   | void write(int b) | 向输入流写入单个字节                           |
+| void write(int b) | 向输入流写入单个字节                           |
    |                   |                                                |
-
+   
    
 
 ## 字符流类：
@@ -721,7 +723,36 @@ void flush() throws IOExpection
 void close() throws IOExpection
 ```
 
+#### 装饰类：
 
+在I/O流的基础上使用装饰类来添加I/O流的功能
+
+#### NIO类：
+
+将数据以块的方式进行传输 节省传输时间
+
+缓冲区（Buffer）为NIO数据的载体 且与通道一同使用 程序从通道将数据读入缓冲区 从缓冲区中将数据写入通道
+
+通道提供的是非阻塞式的输入输出调用 且为双向传输
+
+读取文件：
+
+1. 从FileInputStream 获取 Channel
+2. 建立Buffer
+3. 数据从 Channel读到Buffer中
+
+```java
+FileInputStream fin = new FileInputStream(url);	//1
+FileChannel FChannel = fin.getChannel();
+ByteBuffer buffer = ByteBuffer.allocate(Size);	//2
+FChannel.read(buffer);	//3
+```
+
+写入文件：
+
+1. 从FileOutputStream中获取Channel
+2. 创建一个Buffer
+3. 将数据写入缓冲区
 
 # 多线程
 
@@ -814,7 +845,7 @@ Thread类常用方法
 
 4. 同步化
 
-   使用多先时通过同步化协调两个或多个线程的活动（当两线程同时修改一个文件或等待另一个线程的事件发出时）
+   使用多线程时通过同步化协调两个或多个线程的活动（当两线程同时修改一个文件或等待另一个线程的事件发出时）
 
    通过监视器来实现同步化 监视器通过实现Lock来工作 当一个对象被一个线程锁住时其他线程无法访问该对象 当线程退出解锁对象后其他线程再对对象进行访问（java中的所有对象都拥有一个监视器）
    
@@ -832,7 +863,9 @@ Thread类常用方法
    synchronized (object){...}//object是对被同步化的对象的引用
    ```
    
-   
+5. 回调 
+
+   使用回调接口进行 在run函数中进行异步回调 即接入一个实现了接口的类的回调方法 最后来调用此方法即为 异步回调
 
 # applet
 

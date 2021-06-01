@@ -169,3 +169,22 @@ read()/write(), recv()/send(), readv()\writev(), recvmsg()\sendmsg(), recvfrom()
 
    
 
+4. SSLsocketFactory
+
+   ```java
+   SocketFactorygetDefault()		//返回一个默认的SSL嵌套字工厂
+   ```
+
+   ```java
+   Socket createSocket(String host,int port);
+   Socket createSocket(String host,int port,InetAddress clientHost,int clientPort);
+   Socket createSocket(InetAddress host,int port);
+   Socket createSocket(InetAddress host,int port,InetAddress clientHost,int clientPort);
+   Socket createSocket(Socket socket,String host,int port,boolean autoClose);		//构造函数 返回一个SSL嵌套字
+   ```
+
+   ```
+   String [] getDefaultCipherSuites
+   ```
+
+   
